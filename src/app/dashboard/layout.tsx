@@ -11,7 +11,7 @@ export default async function DashboardLayout({
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (!token || token.value !== adminPassword) {
-    redirect("/dashboard/login");
+    redirect("/login");
   }
 
   return (

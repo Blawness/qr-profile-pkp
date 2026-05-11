@@ -80,14 +80,13 @@ export function MemberForm({ open, onClose, onSave, member }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="userId">User ID</Label>
+            <Label htmlFor="userId">User ID (opsional)</Label>
             <Input
               id="userId"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              required={!member}
               disabled={!!member}
-              placeholder="UUID dari absensi DB"
+              placeholder="UUID dari absensi DB (kosongkan jika tidak ada)"
             />
           </div>
           <div className="space-y-2">

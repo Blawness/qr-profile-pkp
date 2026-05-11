@@ -18,20 +18,24 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
 
-    if (res.ok) {
-      router.push("/dashboard");
-      router.refresh();
-    } else {
-      setError("Password salah.");
+      if (res.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setError("Password salah.");
+      }
+    } catch {
+      setError("Gagal terhubung ke server. Coba lagi.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

@@ -46,7 +46,7 @@ export function MemberTable({ members, onEdit, onViewQR, onDelete }: Props) {
               <TableCell className="font-medium">{member.name}</TableCell>
               <TableCell>{member.email || "-"}</TableCell>
               <TableCell className="font-mono text-xs">
-                {member.userId.substring(0, 8)}...
+                {member.userId ? `${member.userId.substring(0, 8)}...` : "-"}
               </TableCell>
               <TableCell>
                 {member.qrCodeUrl ? (

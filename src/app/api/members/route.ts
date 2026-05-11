@@ -29,30 +29,32 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { userId, name, email, photoUrl, qrCodeUrl } = body;
 
-  if (!userId || !name) {
+  if (!name) {
     return NextResponse.json(
-      { error: "userId and name are required" },
+      { error: "name is required" },
       { status: 400 }
     );
   }
 
-  const existing = await db
-    .select()
-    .from(members)
-    .where(eq(members.userId, userId))
-    .limit(1);
+  if (userId) {
+    const existing = await db
+      .select()
+      .from(members)
+      .where(eq(members.userId, userId))
+      .limit(1);
 
-  if (existing.length > 0) {
-    return NextResponse.json(
-      { error: "Member with this userId already exists" },
-      { status: 409 }
-    );
+    if (existing.length > 0) {
+      return NextResponse.json(
+        { error: "Member with this userId already exists" },
+        { status: 409 }
+      );
+    }
   }
 
   const [member] = await db
     .insert(members)
     .values({
-      userId,
+      userId: userId || null,
       name,
       email: email || null,
       photoUrl: photoUrl || null,

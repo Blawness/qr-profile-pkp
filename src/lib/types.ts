@@ -1,6 +1,6 @@
 export type Member = {
   id: number;
-  userId: string;
+  userId: string | null;
   name: string;
   email: string | null;
   photoUrl: string | null;

@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { autoCheckIn } from "@/lib/absensi";
 
 type Props = {
-  userId: string;
+  userId: string | null;
   name: string;
   photoUrl: string | null;
   dbName: string | null;
@@ -89,6 +89,8 @@ export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) 
   const isButtonDisabled =
     status.type === "loading_gps" || status.type === "loading_attendance";
 
+  const hasAbsensi = userId !== null;
+
   const buttonLabel =
     status.type === "loading_gps"
       ? "Mendapatkan lokasi..."
@@ -115,6 +117,9 @@ export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) 
             </div>
           )}
           <h2 className="text-xl font-bold text-center">{displayName}</h2>
+          {!hasAbsensi && (
+            <p className="text-sm text-gray-500">Profil — absensi tidak tersedia</p>
+          )}
 
           {status.type === "success" && (
             <div className="w-full bg-green-50 border border-green-200 rounded-md p-3 text-center">
@@ -130,7 +135,7 @@ export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) 
             </div>
           )}
 
-          {status.type !== "success" && (
+          {hasAbsensi && status.type !== "success" && (
             <Button
               className="w-full"
               size="lg"

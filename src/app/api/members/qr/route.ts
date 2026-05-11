@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
   try {
     const qrBuffer = await generateQRCode(member.userId, member.name);
     const blob = new Blob([new Uint8Array(qrBuffer)], { type: "image/png" });
-    const file = new File([blob], `qr-${member.userId}.png`, {
+    const file = new File([blob], `qr-${member.userId || member.id}.png`, {
       type: "image/png",
     });
     const uploadResult = await utapi.uploadFiles(file);

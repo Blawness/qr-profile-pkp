@@ -25,7 +25,9 @@ export function QRDisplay({ open, onClose, member }: Props) {
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const encodedName = encodeURIComponent(member.name);
-  const scanUrl = `${baseUrl}/scan?userId=${member.userId}&name=${encodedName}`;
+  const params = new URLSearchParams({ name: encodedName });
+  if (member.userId) params.set("userId", member.userId);
+  const scanUrl = `${baseUrl}/scan?${params.toString()}`;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(scanUrl);

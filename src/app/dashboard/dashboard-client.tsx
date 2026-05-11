@@ -85,9 +85,12 @@ export function DashboardClient({ initialMembers, fetchError }: Props) {
                 : m
             )
           );
+        } else {
+          const qrJson = await qrRes.json().catch(() => null);
+          setError(qrJson?.error || "Gagal generate QR.");
         }
       } catch {
-        console.error("Failed to generate QR");
+        setError("Gagal generate QR. Periksa koneksi.");
       }
     }
   };
