@@ -3,71 +3,9 @@ import { db } from "@/db";
 import { members } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { generateQRCode } from "@/lib/qr";
+import { UTApi, UTFile } from "uploadthing/server";
 
-const UPLOADTHING_API_KEY = process.env.UPLOADTHING_SECRET!;
-const UPLOADTHING_APP_ID = process.env.UPLOADTHING_APP_ID!;
-
-async function uploadToUploadThing(
-  buffer: Buffer,
-  filename: string,
-  contentType: string
-): Promise<string> {
-  const keyParts = UPLOADTHING_APP_ID ? [UPLOADTHING_APP_ID, filename] : [filename];
-  const key = keyParts.join("/");
-
-  // Get presigned URL from UploadThing
-  const prepareRes = await fetch("https://uploadthing.com/api/prepareUpload", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": UPLOADTHING_API_KEY,
-      "x-uploadthing-version": "7.7.4",
-      "x-uploadthing-be-adapter": "server-sdk",
-    },
-    body: JSON.stringify({
-      files: [
-        {
-          name: filename,
-          size: buffer.length,
-          type: contentType,
-          customId: null,
-          key,
-        },
-      ],
-    }),
-  });
-
-  if (!prepareRes.ok) {
-    const text = await prepareRes.text();
-    throw new Error(`Prepare upload failed: ${prepareRes.status} ${text}`);
-  }
-
-  const presigned = await prepareRes.json();
-  const presignedUrl = presigned[0]?.presignedUrl || presigned[0]?.url;
-  const fileKey = presigned[0]?.key || key;
-  const fileUrl = presigned[0]?.url || presigned[0]?.ufsUrl;
-
-  if (!presignedUrl) {
-    throw new Error("No presigned URL in response");
-  }
-
-  // Upload file to presigned URL
-  const uploadRes = await fetch(presignedUrl, {
-    method: "PUT",
-    headers: {
-      "Content-Type": contentType,
-      "Content-Length": String(buffer.length),
-    },
-    body: buffer,
-  });
-
-  if (!uploadRes.ok) {
-    const text = await uploadRes.text();
-    throw new Error(`Upload failed: ${uploadRes.status} ${text}`);
-  }
-
-  return fileUrl || `https://${UPLOADTHING_APP_ID}.ufs.sh/f/${fileKey}`;
-}
+const utapi = new UTApi();
 
 export async function POST(request: NextRequest) {
   let memberId: number;
@@ -100,11 +38,22 @@ export async function POST(request: NextRequest) {
 
   try {
     const qrBuffer = await generateQRCode(member.userId, member.name);
-    const qrCodeUrl = await uploadToUploadThing(
-      qrBuffer,
+    const file = new UTFile(
+      [qrBuffer],
       `qr-${member.userId || member.id}.png`,
-      "image/png"
+      { type: "image/png" }
     );
+    const uploadResult = await utapi.uploadFiles(file);
+
+    if (uploadResult.error) {
+      console.error("UploadThing error:", uploadResult.error);
+      return NextResponse.json(
+        { error: "Failed to upload QR" },
+        { status: 500 }
+      );
+    }
+
+    const qrCodeUrl = uploadResult.data.url;
 
     await db
       .update(members)
