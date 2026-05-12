@@ -44,7 +44,7 @@ export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) 
 
         try {
           const result = await autoCheckIn(
-            userId,
+            userId!,
             position.coords.latitude,
             position.coords.longitude,
             position.coords.accuracy

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
   try {
     const qrBuffer = await generateQRCode(member.userId, member.name);
     const file = new UTFile(
-      [qrBuffer],
+      [new Uint8Array(qrBuffer)],
       `qr-${member.userId || member.id}.png`,
       { type: "image/png" }
     );
