@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LayoutDashboard, Wrench, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, Wrench, LogOut } from "lucide-react";
 
 export default async function DashboardLayout({
   children,
@@ -41,13 +41,22 @@ export default async function DashboardLayout({
             Dashboard
           </Link>
           {role === "admin" && (
-            <Link
-              href="/dashboard/developer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-            >
-              <Wrench className="w-4 h-4" />
-              Developer
-            </Link>
+            <>
+              <Link
+                href="/dashboard/users"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Users
+              </Link>
+              <Link
+                href="/dashboard/developer"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+              >
+                <Wrench className="w-4 h-4" />
+                Developer
+              </Link>
+            </>
           )}
         </nav>
 
