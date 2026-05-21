@@ -9,12 +9,19 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token");
-  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  if (!token || token.value !== adminPassword) {
+  const legacyToken = cookieStore.get("admin_token");
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const hasLegacyAuth = legacyToken && adminPassword && legacyToken.value === adminPassword;
+
+  const sessionUser = cookieStore.get("session_username");
+  const sessionRole = cookieStore.get("session_role");
+
+  if (!hasLegacyAuth && (!sessionUser || !sessionRole)) {
     redirect("/login");
   }
+
+  const role = sessionRole?.value || "admin";
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -33,13 +40,15 @@ export default async function DashboardLayout({
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
           </Link>
-          <Link
-            href="/dashboard/developer"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          >
-            <Wrench className="w-4 h-4" />
-            Developer
-          </Link>
+          {role === "admin" && (
+            <Link
+              href="/dashboard/developer"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >
+              <Wrench className="w-4 h-4" />
+              Developer
+            </Link>
+          )}
         </nav>
 
         <div className="p-3 border-t">
@@ -59,7 +68,9 @@ export default async function DashboardLayout({
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white border-b px-6 py-3 flex items-center justify-between shrink-0">
           <h2 className="text-sm font-medium text-gray-600">Dashboard</h2>
-          <span className="text-[11px] text-gray-400">PKP Admin</span>
+          <span className="text-[11px] text-gray-400">
+            {sessionUser?.value || "Admin"} &middot; {role}
+          </span>
         </header>
         <main className="flex-1 p-6 overflow-auto">{children}</main>
       </div>
