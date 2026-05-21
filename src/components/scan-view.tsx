@@ -21,7 +21,13 @@ export function ScanView({ name, photoUrl, email, divisi, jabatan, noTelp, dbNam
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
       <Card className="w-full max-w-sm">
-        <CardContent className="pt-6 flex flex-col items-center gap-4">
+        <CardContent className="pt-6 flex flex-col items-center gap-4 relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo.webp"
+            alt="Logo"
+            className="absolute top-3 left-4 h-8 w-auto object-contain"
+          />
           {photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
