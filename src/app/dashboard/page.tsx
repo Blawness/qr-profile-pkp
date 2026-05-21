@@ -1,23 +1,18 @@
 import { DashboardClient } from "./dashboard-client";
-import type { Member } from "@/lib/types";
+import { db } from "@/db";
+import { members } from "@/db/schema";
+
+export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
-  let members: Member[] = [];
+  let memberList: typeof members.$inferSelect[] = [];
   let fetchError: string | null = null;
 
   try {
-    const res = await fetch(`${baseUrl}/api/members`, { cache: "no-store" });
-    if (res.ok) {
-      const data = await res.json();
-      members = data.members || [];
-    } else {
-      fetchError = "Gagal mengambil data member.";
-    }
+    memberList = await db.select().from(members).orderBy(members.createdAt);
   } catch {
-    fetchError = "Gagal terhubung ke server.";
+    fetchError = "Gagal mengambil data member.";
   }
 
-  return <DashboardClient initialMembers={members} fetchError={fetchError} />;
+  return <DashboardClient initialMembers={memberList} fetchError={fetchError} />;
 }

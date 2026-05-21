@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
 import type { Member } from "@/lib/types";
 
 type Props = {
@@ -79,7 +80,15 @@ export function MemberTable({ members, onEdit, onViewQR, onDelete }: Props) {
                   <div className="w-10 h-10 rounded-full bg-gray-200" />
                 )}
               </TableCell>
-              <TableCell className="text-right space-x-2">
+              <TableCell className="text-right space-x-2 whitespace-nowrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open(`/scan?userId=${encodeURIComponent(member.userId || "")}&name=${encodeURIComponent(member.name)}`, "_blank")}
+                  title="Buka halaman scan"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
