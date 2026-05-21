@@ -1,4 +1,5 @@
 import { ScanView } from "@/components/scan-view";
+import type { Member } from "@/lib/types";
 
 export default async function ScanPage({
   searchParams,
@@ -20,7 +21,7 @@ export default async function ScanPage({
     );
   }
 
-  let member: { photoUrl?: string | null; name: string } | null = null;
+  let member: Member | null = null;
   let fetchError: string | null = null;
 
   if (userId) {
@@ -50,6 +51,10 @@ export default async function ScanPage({
       userId={userId || null}
       name={decodedName}
       photoUrl={member?.photoUrl || null}
+      email={member?.email || null}
+      divisi={member?.divisi || null}
+      jabatan={member?.jabatan || null}
+      noTelp={member?.noTelp || null}
       dbName={member?.name || null}
       fetchError={fetchError}
     />

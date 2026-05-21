@@ -115,6 +115,7 @@ export function DashboardClient({ initialMembers, fetchError }: Props) {
         onDelete={handleDelete}
       />
       <MemberForm
+        key={editingMember?.id ?? "new"}
         open={formOpen}
         onClose={() => setFormOpen(false)}
         onSave={handleSave}

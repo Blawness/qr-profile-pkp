@@ -9,13 +9,16 @@ export async function PUT(
 ) {
   const { id } = await params;
   const body = await request.json();
-  const { name, email, photoUrl, qrCodeUrl } = body;
+  const { name, email, divisi, jabatan, noTelp, photoUrl, qrCodeUrl } = body;
 
   const [member] = await db
     .update(members)
     .set({
       ...(name !== undefined && { name }),
       ...(email !== undefined && { email }),
+      ...(divisi !== undefined && { divisi }),
+      ...(jabatan !== undefined && { jabatan }),
+      ...(noTelp !== undefined && { noTelp }),
       ...(photoUrl !== undefined && { photoUrl }),
       ...(qrCodeUrl !== undefined && { qrCodeUrl }),
       updatedAt: new Date(),

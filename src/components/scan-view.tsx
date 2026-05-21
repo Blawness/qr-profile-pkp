@@ -1,102 +1,22 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { autoCheckIn } from "@/lib/absensi";
+import { Building2, Briefcase, Mail, Phone } from "lucide-react";
 
 type Props = {
   userId: string | null;
   name: string;
   photoUrl: string | null;
+  email: string | null;
+  divisi: string | null;
+  jabatan: string | null;
+  noTelp: string | null;
   dbName: string | null;
   fetchError: string | null;
 };
 
-type Status =
-  | { type: "idle" }
-  | { type: "loading_gps" }
-  | { type: "loading_attendance" }
-  | { type: "success"; message: string }
-  | { type: "error"; message: string };
-
-export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) {
-  const [status, setStatus] = useState<Status>(
-    fetchError ? { type: "error", message: fetchError } : { type: "idle" }
-  );
-
+export function ScanView({ name, photoUrl, email, divisi, jabatan, noTelp, dbName, fetchError }: Props) {
   const displayName = dbName || name;
-
-  const handleCheckIn = async () => {
-    setStatus({ type: "loading_gps" });
-
-    if (!("geolocation" in navigator)) {
-      setStatus({
-        type: "error",
-        message: "GPS tidak tersedia di perangkat ini.",
-      });
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        setStatus({ type: "loading_attendance" });
-
-        try {
-          const result = await autoCheckIn(
-            userId!,
-            position.coords.latitude,
-            position.coords.longitude,
-            position.coords.accuracy
-          );
-
-          if (result.success) {
-            setStatus({ type: "success", message: result.message || "Absen berhasil!" });
-          } else {
-            setStatus({
-              type: "error",
-              message: result.message || "Gagal absen. Coba lagi.",
-            });
-          }
-        } catch {
-          setStatus({
-            type: "error",
-            message: "Gagal terhubung. Periksa koneksi.",
-          });
-        }
-      },
-      (error) => {
-        let message: string;
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            message = "Izinkan akses lokasi untuk absen.";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            message = "Gagal mendapatkan lokasi. Coba lagi.";
-            break;
-          case error.TIMEOUT:
-            message = "Waktu permintaan lokasi habis. Coba lagi.";
-            break;
-          default:
-            message = "Gagal mendapatkan lokasi.";
-        }
-        setStatus({ type: "error", message });
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  };
-
-  const isButtonDisabled =
-    status.type === "loading_gps" || status.type === "loading_attendance";
-
-  const hasAbsensi = userId !== null;
-
-  const buttonLabel =
-    status.type === "loading_gps"
-      ? "Mendapatkan lokasi..."
-      : status.type === "loading_attendance"
-        ? "Mengirim absen..."
-        : "Absen Sekarang";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
@@ -117,34 +37,52 @@ export function ScanView({ userId, name, photoUrl, dbName, fetchError }: Props) 
             </div>
           )}
           <h2 className="text-xl font-bold text-center">{displayName}</h2>
-          {!hasAbsensi && (
-            <p className="text-sm text-gray-500">Profil — absensi tidak tersedia</p>
-          )}
 
-          {status.type === "success" && (
-            <div className="w-full bg-green-50 border border-green-200 rounded-md p-3 text-center">
-              <p className="text-green-700 font-semibold">Absen Berhasil</p>
-              <p className="text-green-600 text-sm">{status.message}</p>
-            </div>
-          )}
-
-          {status.type === "error" && (
+          {fetchError && (
             <div className="w-full bg-red-50 border border-red-200 rounded-md p-3 text-center">
               <p className="text-red-700 font-semibold">Gagal</p>
-              <p className="text-red-600 text-sm">{status.message}</p>
+              <p className="text-red-600 text-sm">{fetchError}</p>
             </div>
           )}
 
-          {hasAbsensi && status.type !== "success" && (
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={handleCheckIn}
-              disabled={isButtonDisabled}
-            >
-              {buttonLabel}
-            </Button>
-          )}
+          <div className="w-full space-y-2 pt-2">
+            {divisi && (
+              <div className="flex items-center gap-3 text-sm">
+                <Building2 className="w-4 h-4 text-gray-400 shrink-0" />
+                <div>
+                  <span className="text-gray-500 text-xs">Divisi</span>
+                  <p className="font-medium">{divisi}</p>
+                </div>
+              </div>
+            )}
+            {jabatan && (
+              <div className="flex items-center gap-3 text-sm">
+                <Briefcase className="w-4 h-4 text-gray-400 shrink-0" />
+                <div>
+                  <span className="text-gray-500 text-xs">Jabatan</span>
+                  <p className="font-medium">{jabatan}</p>
+                </div>
+              </div>
+            )}
+            {email && (
+              <div className="flex items-center gap-3 text-sm">
+                <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                <div>
+                  <span className="text-gray-500 text-xs">Email</span>
+                  <p className="font-medium">{email}</p>
+                </div>
+              </div>
+            )}
+            {noTelp && (
+              <div className="flex items-center gap-3 text-sm">
+                <Phone className="w-4 h-4 text-gray-400 shrink-0" />
+                <div>
+                  <span className="text-gray-500 text-xs">No. Telpon</span>
+                  <p className="font-medium">{noTelp}</p>
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

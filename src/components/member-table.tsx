@@ -33,7 +33,10 @@ export function MemberTable({ members, onEdit, onViewQR, onDelete }: Props) {
         <TableHeader>
           <TableRow>
             <TableHead>Nama</TableHead>
+            <TableHead>Divisi</TableHead>
+            <TableHead>Jabatan</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>No.Telpon</TableHead>
             <TableHead>User ID</TableHead>
             <TableHead>QR</TableHead>
             <TableHead>Foto</TableHead>
@@ -44,7 +47,10 @@ export function MemberTable({ members, onEdit, onViewQR, onDelete }: Props) {
           {members.map((member) => (
             <TableRow key={member.id}>
               <TableCell className="font-medium">{member.name}</TableCell>
+              <TableCell>{member.divisi || "-"}</TableCell>
+              <TableCell>{member.jabatan || "-"}</TableCell>
               <TableCell>{member.email || "-"}</TableCell>
+              <TableCell>{member.noTelp || "-"}</TableCell>
               <TableCell className="font-mono text-xs">
                 {member.userId ? `${member.userId.substring(0, 8)}...` : "-"}
               </TableCell>

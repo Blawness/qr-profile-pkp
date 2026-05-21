@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { userId, name, email, photoUrl, qrCodeUrl } = body;
+  const { userId, name, email, divisi, jabatan, noTelp, photoUrl, qrCodeUrl } = body;
 
   if (!name) {
     return NextResponse.json(
@@ -57,6 +57,9 @@ export async function POST(request: NextRequest) {
       userId: userId || null,
       name,
       email: email || null,
+      divisi: divisi || null,
+      jabatan: jabatan || null,
+      noTelp: noTelp || null,
       photoUrl: photoUrl || null,
       qrCodeUrl: qrCodeUrl || null,
     })

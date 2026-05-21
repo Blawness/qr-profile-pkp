@@ -24,6 +24,9 @@ export type MemberFormData = {
   name: string;
   email: string;
   userId: string;
+  divisi: string;
+  jabatan: string;
+  noTelp: string;
   photoUrl: string;
 };
 
@@ -31,6 +34,9 @@ export function MemberForm({ open, onClose, onSave, member }: Props) {
   const [name, setName] = useState(member?.name || "");
   const [email, setEmail] = useState(member?.email || "");
   const [userId, setUserId] = useState(member?.userId || "");
+  const [divisi, setDivisi] = useState(member?.divisi || "");
+  const [jabatan, setJabatan] = useState(member?.jabatan || "");
+  const [noTelp, setNoTelp] = useState(member?.noTelp || "");
   const [photoUrl, setPhotoUrl] = useState(member?.photoUrl || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -41,7 +47,7 @@ export function MemberForm({ open, onClose, onSave, member }: Props) {
     setSaving(true);
 
     try {
-      await onSave({ name, email, userId, photoUrl });
+      await onSave({ name, email, userId, divisi, jabatan, noTelp, photoUrl });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menyimpan.");
@@ -87,6 +93,33 @@ export function MemberForm({ open, onClose, onSave, member }: Props) {
               onChange={(e) => setUserId(e.target.value)}
               disabled={!!member}
               placeholder="UUID dari absensi DB (kosongkan jika tidak ada)"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="divisi">Divisi</Label>
+            <Input
+              id="divisi"
+              value={divisi}
+              onChange={(e) => setDivisi(e.target.value)}
+              placeholder="Divisi"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="jabatan">Jabatan</Label>
+            <Input
+              id="jabatan"
+              value={jabatan}
+              onChange={(e) => setJabatan(e.target.value)}
+              placeholder="Jabatan"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="noTelp">Nomor Telpon</Label>
+            <Input
+              id="noTelp"
+              value={noTelp}
+              onChange={(e) => setNoTelp(e.target.value)}
+              placeholder="08xxxxxxxxxx"
             />
           </div>
           <div className="space-y-2">
