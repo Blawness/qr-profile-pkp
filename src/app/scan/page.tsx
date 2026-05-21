@@ -1,5 +1,9 @@
 import { ScanView } from "@/components/scan-view";
-import type { Member } from "@/lib/types";
+import { db } from "@/db";
+import { members } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+export const dynamic = "force-dynamic";
 
 export default async function ScanPage({
   searchParams,
@@ -21,28 +25,24 @@ export default async function ScanPage({
     );
   }
 
-  let member: Member | null = null;
+  let member: typeof members.$inferSelect | null = null;
   let fetchError: string | null = null;
 
   if (userId) {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
     try {
-      const res = await fetch(
-        `${baseUrl}/api/members?userId=${encodeURIComponent(userId)}`,
-        { cache: "no-store" }
-      );
+      const result = await db
+        .select()
+        .from(members)
+        .where(eq(members.userId, userId))
+        .limit(1);
 
-      if (res.ok) {
-        const data = await res.json();
-        member = data.member;
-      } else if (res.status === 404) {
-        fetchError = "Member tidak ditemukan.";
+      if (result.length > 0) {
+        member = result[0];
       } else {
-        fetchError = "Gagal mengambil data member.";
+        fetchError = "Member tidak ditemukan.";
       }
     } catch {
-      fetchError = "Gagal terhubung ke server.";
+      fetchError = "Gagal mengambil data member.";
     }
   }
 
