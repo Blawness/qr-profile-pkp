@@ -49,6 +49,7 @@ export default async function ScanPage({
   return (
     <ScanView
       userId={userId || null}
+      memberId={member?.id ?? null}
       name={decodedName}
       photoUrl={member?.photoUrl || null}
       email={member?.email || null}
